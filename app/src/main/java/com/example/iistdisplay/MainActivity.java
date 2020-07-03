@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             Log.d(LOG_TAG, getString(R.string.bundle));
             deletedItems = savedInstanceState.getIntegerArrayList(ITEMS_DELTED_KEY);
-            for (Integer v : deletedItems
+            for (int v : deletedItems
             ) {
                 simpleAdapterContent.remove(v);
             }
