@@ -1,11 +1,14 @@
 package com.example.iistdisplay;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -23,11 +26,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String ATTRIBUTE_NAME_SUBTITLE = "subtitle";
     private static final String CONTENT_KEY = "values";
 
+    private static final String ITEMS_DELTED_KEY = "ITEMS_DELETED";
+    private static final String LOG_TAG = "Log612";
+
     private List<Map<String, String>> simpleAdapterContent = new ArrayList<>();
+    private ArrayList<Integer> deletedItems = new ArrayList<Integer>();
     private SharedPreferences preferences;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -47,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 simpleAdapterContent.remove(position);
+                deletedItems.add(position);
                 listContentAdapter.notifyDataSetChanged();
             }
         });
@@ -62,6 +70,17 @@ public class MainActivity extends AppCompatActivity {
                 refreshLayout.setRefreshing(false);
             }
         });
+        if (savedInstanceState != null) {
+            Log.d(LOG_TAG, getString(R.string.bundle));
+            deletedItems = savedInstanceState.getIntegerArrayList(ITEMS_DELTED_KEY);
+            for (Integer v : deletedItems
+            ) {
+                simpleAdapterContent.remove(v);
+            }
+            listContentAdapter.notifyDataSetChanged();
+        } else {
+            Log.d(LOG_TAG, getString(R.string.bundle));
+        }
     }
 
     private BaseAdapter createAdapter(List<Map<String, String>> values) {
@@ -88,5 +107,20 @@ public class MainActivity extends AppCompatActivity {
             map.put(ATTRIBUTE_NAME_SUBTITLE, str);
             simpleAdapterContent.add(map);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putIntegerArrayList(ITEMS_DELTED_KEY, deletedItems);
+        super.onSaveInstanceState(outState);
+        Log.d(LOG_TAG, getString(R.string.onSaveInstanceState));
+        //      mText.append("\n" + getString(R.string.onSaveInstanceState));
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(LOG_TAG, getString(R.string.onRestoreInstanceState));
+//        mText.append("\n" + getString(R.string.onRestoreInstanceState));
     }
 }
